@@ -19,11 +19,6 @@ import os
 import json
 from frappe.model.document import Document
 
-
-# doc = frappe.get_doc({"doctype": "Auto", "item": "shahadat"})
-# doc.insert()
-
-# frappe.db.commit()
 custom_template ="""When a user requests the creation of a sales order,You have to ask user please provide the "Customer Name" and "Item Name."  \n
 Then generate a JSON format using  "Customer Name" and "Item Name" that has been provided by user and respond with the formatted data.
 Remember you are strictly instructed to identify the "Customer Name" and "Item Name" and generate only JSON response. Don't make extra response
@@ -36,32 +31,16 @@ Question: {question}
 Helpful Answer:
 """
 
-customs_template = """
-When user request you to create a "sales order" then you have to tell them to give you "Customer Name", "Item Name".
-Then You have to make these data into a json format and response back with it. Remember when you raise json data it must be on JSON
-format and do not make any extra response during this time so that the JSON data can be use in other funtional tasks. 
-If you don't know the answer, just say that you don't know, don't try to make up an answer. \n. 
-Keep the answer as concise as possible. 
- 
-Question: {question}
-Helpful Answer:"""
 
-
-# prompt = PromptTemplate(
-#     input_variables=["chat_history","question", "context"], template=customs_template
-# )
-
-CUSTOM_QUESTION_PROMPT = PromptTemplate.from_template(customs_template)
-# prompts = CUSTOM_QUESTION_PROMPT.format(chat_history="chat_history", question="question")
 prompt = PromptTemplate(
     input_variables=["question"],
     template=custom_template
 )
 
 
-os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = "YOUR_OPEN_API_KEY"
 
-llm = OpenAI(model_name="gpt-3.5-turbo", temperature=0, openai_api_key="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")
+llm = OpenAI(model_name="gpt-3.5-turbo", temperature=0, openai_api_key="YOUR_OPEN_API_KEY")
 
 
 class getChat():
@@ -115,26 +94,4 @@ def get_chat_response(user_input):
     return response 
 
 
-@frappe.whitelist()
-def get_chat(user_input):
-    try:
-            # Parse the data as JSON
-            data_dict = json.loads(response)
-
-            # Iterate through the data
-            for key, value in data_dict.items():
-                print(f"{key}: {value}")
-
-                # If the value is a list, iterate through it
-                if isinstance(value, list):
-                    for item in value:
-                        print(f"  - {item}")
-                        note = frappe.get_doc({"doctype": "Auto", "item": f"{item}"})
-                        note.insert()
-                        frappe.db.commit()
-
-    except json.JSONDecodeError:
-            print(response)
-            # return response
-        # print(response)
 
